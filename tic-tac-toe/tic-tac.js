@@ -77,8 +77,8 @@ document.addEventListener("DOMContentLoaded", () => {
     playerForm.addEventListener('submit', (e) => {
         e.preventDefault();
         returnPopUpText();
-        player1.name = document.getElementById('player1').value;
-        player2.name = document.getElementById('player2').value;
+        player1.name = capitalize(document.getElementById('player1').value);
+        player2.name = capitalize(document.getElementById('player2').value);
         const computerOpponent = document.getElementById('computerOpponent').checked;
 
         if (!player2.name && computerOpponent) {
@@ -91,6 +91,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
         popup.classList.remove('show');
     });
+
+    function capitalize(str) {
+        if (typeof str === 'string') {
+            return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+        }
+        return str;
+    }
 
    
   
