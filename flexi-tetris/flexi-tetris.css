@@ -1,0 +1,134 @@
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: Arial, sans-serif;
+    background-color: #2E2E2E;
+    margin: 0;
+    padding: 20px;
+}
+
+.back-bnt{
+    position: absolute;
+    top: 24px;
+    left: 200px;
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+.back-bnt img{
+    width: 70px;
+    height: 70px;
+}
+
+.game-board {
+    display: grid;
+    grid-template-columns: repeat(10, 50px);
+    grid-template-rows: repeat(10, 50px);
+    gap: 2px;
+    background-color: red;
+    position: absolute; /* Naudojame absoliučią padėtį */
+    top: 110px; /* Nustatykite pagal pageidaujamą vietą */
+    left: 701px; /* Nustatykite pagal pageidaujamą vietą */
+    z-index: -1; /* Padėkite po kitais elementais */
+   
+}
+
+.game-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(10, 50px);
+    grid-template-rows: repeat(10, 50px);
+    gap: 2px;
+    background-color: #2E2E2E;
+
+}
+
+.grid div {
+    width: 50px;
+    height: 50px;
+    border-radius: 5px;
+    background-color: #444;
+}
+
+/* .pieces {
+    margin-top: 30px;
+    display: flex;
+    gap: 20px;
+}
+
+.piece {
+    display: flex;
+    flex-direction: column;
+    background-color: transparent;
+    cursor: pointer;
+    padding: 0px;
+    
+} */
+
+
+/* .pieces {
+    position: absolute;
+    margin-top: 30px;
+    display: flex;
+    gap: 20px;
+} */
+
+.piece-1 {
+    position: absolute; 
+    top: 650px;
+    left: 700px;
+
+}
+.piece-2 {
+    position: absolute; 
+    top: 650px;
+    left: 880px;
+}
+.piece-3 {
+    position: absolute; 
+    top: 650px;
+    left: 1080px;
+}
+
+.grid div {
+    width: 50px;
+    height: 50px;
+    border-radius: 5px;
+    background-color: #444; /* Pradinė spalva */
+    position: relative; /* Padės animacijoms */
+    transition: background-color 0.5s ease; /* Pakeitimas tik spalvos animacijai */
+}
+
+
+
+@keyframes fadeOut {
+    0% {
+        background-color: #444; /* Pradinė spalva */
+        opacity: 1; /* Pradinė skaidrumo vertė */
+        transform: scale(1); /* Pradinė dydžio vertė */
+    }
+    50% {
+        background-color: #444; /* Išnykimo vidurys - spalva lieka ta pati */
+        opacity: 0.5; /* Vidurys skaidrumo vertė */
+        transform: scale(0.8); /* Susitraukia iki 80% */
+    }
+    100% {
+        background-color: transparent; /* Spalva išnyksta */
+        opacity: 0; /* Paslėpta būsena */
+        transform: scale(0); /* Susitraukia iki 0 */
+    }
+}
+
+.fade-out {
+    animation: fadeOut 0.5s forwards; /* Naudojame animaciją */
+    pointer-events: none; /* Neleiskite paspaudimų ant paslėptų elementų */
+}
+

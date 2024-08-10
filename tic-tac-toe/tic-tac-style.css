@@ -162,18 +162,34 @@ h1 {
 }
 
 .playerForm button {
-    padding: 10px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 5px;
+    margin: 40px;
     cursor: pointer;
-    font-size: 16px;
+    border: 0px solid rgb(56, 127, 57);
+    font-family: "system-ui";
+    font-size: 20px;
+    color: rgb(255, 255, 255);
+    padding: 10px 30px;
+    transition: 1951ms;
+    width: 200px;
+    box-shadow: rgba(0, 0, 0, 0.15) 0px 5px 15px 0px;
+    border-radius: 16px;
+    background: linear-gradient(89deg, rgb(162, 202, 113) 28%, rgb(190, 220, 116) 100%);
+    font-weight: 800;
+    --hover-width: 200px;
+    --hover-bgc: #a2ca71;
+    --hover-borderSize: 0px;
+    --hover-color: #ffffff;
+    
 }
 
-.playerForm button:hover {
-    background-color: #45a049;
+.playerForm button:active {
+    transform: scale(0.95); 
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 3px 10px 0px; 
 }
+
+/* .playerForm button:hover {
+    background-color: #45a049;
+} */
 
 .current-turn {
     font-size: 24px;

@@ -55,6 +55,8 @@ document.addEventListener("DOMContentLoaded", () => {
     StartGame();
 
     function StartGame() {
+        playAgainButton.style.visibility = 'hidden'; 
+        
         function randomNumber() {
             let i = words.length - 1;
             const j = Math.floor(Math.random() * (i + 1));
@@ -98,7 +100,7 @@ document.addEventListener("DOMContentLoaded", () => {
             guessWordRow.append(cardElement);
         });
 
-        playAgainButton.style.visibility = 'hidden'; 
+        
     }
 
     function usedCharCheck() {
@@ -137,7 +139,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
         playAgainButton.style.visibility = 'visible'; 
 
-        const cards = document.querySelectorAll('card');
+        const cards = document.querySelectorAll('.card');
         cards.forEach(card=>{
             card.classList.add('disabled');
         })
