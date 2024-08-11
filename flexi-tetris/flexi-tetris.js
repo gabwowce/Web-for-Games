@@ -63,6 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ];
     let placedPiecesCount = 0;
 
+    const gameBoard = document.querySelector('.game-board');
     const gameGrid = document.getElementById('gameGrid');
     const pieceContainer = document.getElementById('pieceContainer');
 
@@ -76,6 +77,11 @@ document.addEventListener('DOMContentLoaded', () => {
         cell.dataset.index = i; // priskiriame kiekvienai ląstelei unikalų indeksą
         gameGrid.appendChild(cell);
     }
+
+    // for (let i = 0; i < gridWidth * gridHeight; i++) {
+    //     const cell = document.createElement('div');
+    //     gameBoard.appendChild(cell);
+    // }
 
     // Generuoja 3 atsitiktines daleles
     function generateRandomPieces() {
@@ -120,62 +126,46 @@ document.addEventListener('DOMContentLoaded', () => {
                     cellDiv.style.backgroundColor = cell ? tetrominoes[index].color : 'transparent';
                     rowDiv.appendChild(cellDiv);
 
-                     // Sukuriame overlay
-                    const overlay = document.createElement('div');
-                    overlay.classList.add('overlay'); // Priskirti overlay klasę
-                    overlay.style.backgroundColor = 'transparent'; // Pradinis skaidrumas
-                    overlay.style.position = 'absolute'; // Overlay pozicija
-                    overlay.style.top = '0';
-                    overlay.style.left = '0';
-                    overlay.style.width = '100%';
-                    overlay.style.height = '100%';
-                    overlay.style.transition = 'background-color 0.5s ease'; // Pridėti animaciją
-                    cellDiv.appendChild(overlay); // Pridėti overlay prie ląstelės
-
-                    rowDiv.appendChild(cellDiv);
                 });
                 piece.appendChild(rowDiv);
             });
     
             dragElement(piece); // Priskirti vilkimo funkciją
         });
+
+        piecesPosition();
     }
     
 
     function dragElement(element) {
-        let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-        element.dataset.initialTop = element.offsetTop; // Pradinė vertikali pozicija
-        element.dataset.initialLeft = element.offsetLeft; // Pradinė horizontali pozicija
+        let offsetX, offsetY;
     
         // Užfiksuokite pradinį pelės paspaudimo momentą
         element.onmousedown = function(e) {
             e.preventDefault();
-            pos3 = e.clientX; // Nustato pradinę x poziciją
-            pos4 = e.clientY; // Nustato pradinę y poziciją
+            // Apskaičiuokite offset
+            offsetX = e.clientX - element.getBoundingClientRect().left; 
+            offsetY = e.clientY - element.getBoundingClientRect().top; 
+    
             document.onmouseup = closeDragElement;
             document.onmousemove = elementDrag;           
         };
     
         function elementDrag(e) {
             e.preventDefault();
-            // Apskaičiuokite kiek elementas turėtų judėti
-            pos1 = e.clientX - pos3; // Naudokite pradinę X poziciją
-            pos2 = e.clientY - pos4; // Naudokite pradinę Y poziciją
-    
-            // Atnaujinkite elementų pozicijas
-            element.style.top = (parseFloat(element.dataset.initialTop) + pos2) + "px"; // Atnaujinkite vertikalią poziciją
-            element.style.left = (parseFloat(element.dataset.initialLeft) + pos1) + "px"; // Atnaujinkite horizontalią poziciją
+            // Nustatome naują poziciją pagal pelės poziciją ir offset
+            element.style.top = (e.clientY - offsetY) + "px"; 
+            element.style.left = (e.clientX - offsetX) + "px"; 
         }
     
-        function closeDragElement(e) {
+        function closeDragElement() {
             document.onmouseup = null;
             document.onmousemove = null;
-            
-          
+    
             checkDrop(element); 
         }
-        
     }
+    
     
     
     
@@ -250,16 +240,19 @@ document.addEventListener('DOMContentLoaded', () => {
             // Grąžinti detalę į pradinę poziciją
             piece.style.top = piece.dataset.initialTop + "px"; // Grąžinkite pradinę vertikalią poziciją
             piece.style.left = piece.dataset.initialLeft + "px"; // Grąžinkite pradinę horizontalią poziciją
+            
         }
     }
 
     function removeFullRowsAndColumns() {
         const gridCells = Array.from(gameGrid.children);
-        
+        const animationDuration = 300; // Laikas (ms), atitinkantis animacijos trukmę
+        const delayBetweenCells = 30; // Laikas (ms) tarp kiekvienos ląstelės animacijos pradžios
+    
         // Pašalinti pilnas eiles
         for (let row = 0; row < gridHeight; row++) {
             let isFullRow = true;
-            
+    
             for (let col = 0; col < gridWidth; col++) {
                 const index = row * gridWidth + col;
                 if (!gridCells[index].style.backgroundColor) {
@@ -267,14 +260,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     break;
                 }
             }
-            
+    
             if (isFullRow) {
-                // Pridėti fade-out klasę
+                // Pridėti fade-out klasę su vėlavimu
                 for (let col = 0; col < gridWidth; col++) {
                     const index = row * gridWidth + col;
-                    gridCells[index].classList.add('fade-out');
+    
+                    setTimeout(() => {
+                        gridCells[index].classList.add('fade-out');
+                    }, col * delayBetweenCells); // Vėlavimas pagal stulpelį
                 }
-                
+    
                 // Išvalyti po animacijos pabaigos
                 setTimeout(() => {
                     for (let col = 0; col < gridWidth; col++) {
@@ -282,14 +278,14 @@ document.addEventListener('DOMContentLoaded', () => {
                         gridCells[index].style.backgroundColor = ''; // Išvalome spalvą
                         gridCells[index].classList.remove('fade-out'); // Pašaliname fade-out klasę
                     }
-                }, 300); // Laikas (ms) iki ląstelių išvalymo
+                }, gridWidth * delayBetweenCells + animationDuration); // Laikas (ms) iki ląstelių išvalymo
             }
         }
-        
+    
         // Pašalinti pilnus stulpelius
         for (let col = 0; col < gridWidth; col++) {
             let isFullColumn = true;
-            
+    
             for (let row = 0; row < gridHeight; row++) {
                 const index = row * gridWidth + col;
                 if (!gridCells[index].style.backgroundColor) {
@@ -297,14 +293,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     break;
                 }
             }
-            
+    
             if (isFullColumn) {
-                // Pridėti fade-out klasę
+                // Pridėti fade-out klasę su vėlavimu
                 for (let row = 0; row < gridHeight; row++) {
                     const index = row * gridWidth + col;
-                    gridCells[index].classList.add('fade-out');
+    
+                    setTimeout(() => {
+                        gridCells[index].classList.add('fade-out');
+                    }, row * delayBetweenCells); // Vėlavimas pagal eilutę
                 }
-                
+    
                 // Išvalyti po animacijos pabaigos
                 setTimeout(() => {
                     for (let row = 0; row < gridHeight; row++) {
@@ -312,20 +311,91 @@ document.addEventListener('DOMContentLoaded', () => {
                         gridCells[index].style.backgroundColor = ''; // Išvalome spalvą
                         gridCells[index].classList.remove('fade-out'); // Pašaliname fade-out klasę
                     }
-                }, 300); // Laikas (ms) iki ląstelių išvalymo
+                }, gridHeight * delayBetweenCells + animationDuration); // Laikas (ms) iki ląstelių išvalymo
             }
         }
     }
     
     
-    
+    function piecesPosition(){
+        const pieces = [
+            document.querySelector('.piece-1'), 
+            document.querySelector('.piece-2'), 
+            document.querySelector('.piece-3')
+        ].filter(piece => piece !== null); // Filtruoti, kad liktų tik esami elementai
 
-    
-    
-    
+        const basePieceSpacing = 50;
+        const currentWindowWidth = window.innerWidth;
+        const currentWindowHeight = window.innerHeight;
+        const gameGridWidth = gameGrid.getBoundingClientRect().width;
+        const gameGridheight = gameGrid.getBoundingClientRect().height;
+
+        let totaloWidth = 0;
+        let totaloHeight = 0;
+
+        pieces.forEach(piece=>{
+            totaloWidth += piece.getBoundingClientRect().width;
+        })
+        totaloWidth += (pieces.length-1)*basePieceSpacing;
+
+        pieces.forEach(piece=>{
+            totaloHeight += piece.getBoundingClientRect().height;
+        })
+        totaloHeight += (pieces.length-1)*basePieceSpacing;
+
+        let piecesStartX = (currentWindowWidth - totaloWidth) / 2;
+        let piecesStartY = (gameGridheight - totaloHeight) / 2 + gameGrid.getBoundingClientRect().y;
+        
+        console.log(
+            'piecesStartX.' + 
+            '\n| currentWindowWidth: ' + currentWindowWidth,
+            '\n| totaloWidth: ' + totaloWidth,
+            '\n| piecesStartX: ' + piecesStartX,
+        )
+
+        piecesStartLeftIfNeedes = ((currentWindowWidth - 500) / 2) + gameGridWidth + 20;
+        console.log('gameGridheight:' + gameGrid.getBoundingClientRect().y)
+        
+        if(currentWindowHeight < 776){
+            pieces.forEach(piece=>{
+                piece.style.top = `${piecesStartY}px`;
+                piece.style.left = `${piecesStartLeftIfNeedes}px`;
+                piecesStartY+=piece.getBoundingClientRect().height + basePieceSpacing;
+                piece.dataset.initialTop = piecesStartY;
+                piece.dataset.initialLeft = piecesStartLeftIfNeedes;
+
+                console.log(
+                    '\n| piece.style.top: ' + piece.style.top,
+                    '\n| piecesStartY: ' + piecesStartY,
+                    '\n| piece.dataset.initialLeft: ' + piece.dataset.initialLeft,
+                )
+        
+            });
+        }
+        if(currentWindowHeight > 776){
+            pieces.forEach(piece=>{
+                piece.style.left = `${piecesStartX}px`;
+                piecesStartX+=piece.getBoundingClientRect().width + basePieceSpacing;
+                if (piece.getBoundingClientRect().height < 98) {
+                    piece.style.top = '675px'; // Nustatyti fiksuotą poziciją
+                    piece.dataset.initialTop = 675;
+                } else {
+                    piece.style.top = '650px';
+                    piece.dataset.initialTop = 650;
+                }
+                
+                piece.dataset.initialLeft = piecesStartX;
+            });
+        }
+         
+
+
+    }
     
 
     generateRandomPieces();
+     // Pritaikyti pozicijas, kai ekrano dydis keičiasi
+    window.addEventListener('resize', piecesPosition);
 
   
 
